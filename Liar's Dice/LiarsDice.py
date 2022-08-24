@@ -6,8 +6,8 @@ import os
 
 
 names = np.array(['Ivan','Yordan','Mariya','Valeri','Iliyana','Gergana'])
-allDices = 0
-playGame = True
+all_dices = 0
+play_game = True
 
 
 def pause():
@@ -19,27 +19,27 @@ def clear_console():
     
 class Player:
     
-    def plName(self):
+    def pl_name(self):
         name = input("Name: ")
         while not name:
             name = input("Name was not typed in. Please type in your name: ")
         return name
     
-    def playerCount(self):
-        numberPlayers = 0
+    def players_count(self):
+        number_players = 0
         while True:
             try:
-                while numberPlayers < 2 or numberPlayers > 5:
-                    numberPlayers = int(input("Type in number of players between 2 and 5: "))
+                while number_players < 2 or number_players > 5:
+                    number_players = int(input("Type in number of players between 2 and 5: "))
                 break
             except ValueError:
                 print("Oops!  Something went wrong with the typed in value.  Try again...") 
-        return numberPlayers
+        return number_players
     
     
 class BotPlayer:
     
-    def botName(self):
+    def bot_name(self):
         global names
         
         name = random.choice(names)
@@ -51,72 +51,72 @@ class BotPlayer:
     
 class InitPlayers(Player,BotPlayer):
    
-    def initPlayerDict(self, numberPlayers, yourName):
+    def init_players_dict(self, number_players, your_name):
         global names
-        playerList = []
-        playerDict = {}
+        player_list = []
+        player_dict = {}
         
-        for i in range(numberPlayers):
+        for i in range(number_players):
             if i == 0:
-                playerList.append(yourName)
+                player_list.append(your_name)
                 continue
-            playerList.append(self.botName())
+            player_list.append(self.bot_name())
             
-        np.random.shuffle(playerList)
+        np.random.shuffle(player_list)
         
-        for ind,x in enumerate(playerList):
-            playerDict[ind] = {}
-            playerDict[ind]["name"] = x
-            playerDict[ind]["numberDice"] = 5
+        for ind,x in enumerate(player_list):
+            player_dict[ind] = {}
+            player_dict[ind]["name"] = x
+            player_dict[ind]["numberDice"] = 5
             
-        return playerDict
+        return player_dict
     
     
 class GameMethods:
     
-    def luckyDices(self,playerDict):
-        for p_id in range(len(playerDict.items())):
-            playerDict[p_id]["luckyDices"] = list(random.choice([1,2,3,4,5,6], size=(playerDict[p_id]['numberDice'])))
+    def lucky_dices(self,player_dict):
+        for p_id in range(len(player_dict.items())):
+            player_dict[p_id]["lucky_dices"] = list(random.choice([1,2,3,4,5,6], size=(player_dict[p_id]['numberDice'])))
       
-    def checkPlayerCount(self,playerDict,previous_player,current_player):
-        global allDices
-        countOfNum = 0
-        finalArr = []
+    def check_players_bets(self,player_dict,previous_player,current_player):
+        global all_dices
+        count_of_num = 0
+        final_arr = []
         
-        for p_id in range(len(playerDict.items())):
-            finalArr+=playerDict[p_id]["luckyDices"]
+        for p_id in range(len(player_dict.items())):
+            final_arr+=player_dict[p_id]["lucky_dices"]
             
-        for el in finalArr:
-            if el == int(playerDict[previous_player]["expNum"]) or el == 1:
-                countOfNum += 1
+        for el in final_arr:
+            if el == int(player_dict[previous_player]["expNum"]) or el == 1:
+                count_of_num += 1
                 
-        if countOfNum >= int(playerDict[previous_player]["expCount"]):
-            playerDict[current_player]["numberDice"]-=1
-            allDices -= 1
+        if count_of_num >= int(player_dict[previous_player]["expCount"]):
+            player_dict[current_player]["numberDice"]-=1
+            all_dices -= 1
             
             pause()
-            print(finalArr)
+            print(final_arr)
             pause()
-            print("There were", countOfNum, "x", playerDict[previous_player]["expNum"])
+            print("There were", count_of_num, "x", player_dict[previous_player]["expNum"])
             pause()
-            print("The bet was", playerDict[previous_player]["expCount"], "x", playerDict[previous_player]["expNum"])
+            print("The bet was", player_dict[previous_player]["expCount"], "x", player_dict[previous_player]["expNum"])
             pause()
-            print(playerDict[current_player]["name"], "lost a die. Dice left:", playerDict[current_player]["numberDice"])
+            print(player_dict[current_player]["name"], "lost a die. Dice left:", player_dict[current_player]["numberDice"])
             pause()
                  
             return True 
         else:
-            playerDict[previous_player]["numberDice"]-=1
-            allDices -= 1
+            player_dict[previous_player]["numberDice"]-=1
+            all_dices -= 1
             
             pause()
-            print(finalArr)
+            print(final_arr)
             pause()
-            print("There were", countOfNum, "x", playerDict[previous_player]["expNum"])
+            print("There were", count_of_num, "x", player_dict[previous_player]["expNum"])
             pause()
-            print("The bet was", playerDict[previous_player]["expCount"], "x", playerDict[previous_player]["expNum"])
+            print("The bet was", player_dict[previous_player]["expCount"], "x", player_dict[previous_player]["expNum"])
             pause()
-            print(playerDict[previous_player]["name"], "lost a die. Dice left:", playerDict[previous_player]["numberDice"])
+            print(player_dict[previous_player]["name"], "lost a die. Dice left:", player_dict[previous_player]["numberDice"])
             pause()
             
             return False
@@ -125,16 +125,16 @@ class GameMethods:
 class Game(InitPlayers, GameMethods):
     
     def __init__(self):
-        self.numberPlayers = self.playerCount()
-        self.yourName = self.plName()
-        self.playerDict = self.initPlayerDict(self.numberPlayers, self.yourName) 
+        self.number_players = self.players_count()
+        self.your_name = self.pl_name()
+        self.player_dict = self.init_players_dict(self.number_players, self.your_name) 
         
-    def reorderDictionary(self,index):
-        global playGame
+    def reorder_dictionary(self,index):
+        global play_game
         x = {}
-        for p_id in range(len(self.playerDict.items())):
-            current_player = index % len(self.playerDict)
-            x[p_id] = self.playerDict[current_player]
+        for p_id in range(len(self.player_dict.items())):
+            current_player = index % len(self.player_dict)
+            x[p_id] = self.player_dict[current_player]
             index+=1
             
         y = {}
@@ -143,9 +143,9 @@ class Game(InitPlayers, GameMethods):
             if x[p_id]["numberDice"] != 0:
                 y[counter] = x[p_id]
                 counter+=1
-            elif x[p_id]["name"] == self.yourName and x[p_id]["numberDice"] == 0:
+            elif x[p_id]["name"] == self.your_name and x[p_id]["numberDice"] == 0:
                 print("Game over! You lost.")
-                playGame = False
+                play_game = False
                 break 
             else:
                 pause()
@@ -154,57 +154,57 @@ class Game(InitPlayers, GameMethods):
                 
         return y  
           
-    def plBets(self):
-        global allDices
-        global playGame
+    def pl_bets(self):
+        global all_dices
+        global play_game
         
-        allDices = self.numberPlayers * 5
-        notFirstPlayer = False
+        all_dices = self.number_players * 5
+        not_first_player = False
         
-        self.luckyDices(self.playerDict)
+        self.lucky_dices(self.player_dict)
         
-        while playGame:
+        while play_game:
             
-            if len(self.playerDict.items()) == 1:
+            if len(self.player_dict.items()) == 1:
                 pause()
                 print("You won")
                 break
             
-            countOfPCNum = 0
-            mainCountMinimum = 0
-            roundOver = False
+            count_of_pc_num = 0
+            main_count_minimum = 0
+            round_over = False
             
             pause()
-            print("All dices:", allDices)
+            print("All dice:", all_dices)
             pause()
             
-            while roundOver == False:
+            while round_over == False:
                 
-                for p_id in range(len(self.playerDict.items())):
-                    self.playerDict[p_id]["callALiar"] = ''
-                    previous_player = (p_id - 1) % len(self.playerDict)
+                for p_id in range(len(self.player_dict.items())):
+                    self.player_dict[p_id]["callALiar"] = ''
+                    previous_player = (p_id - 1) % len(self.player_dict)
                     
-                    if self.playerDict[p_id]["name"] == self.yourName:
-                        print("Your lucky dices:", self.playerDict[p_id]["luckyDices"])
+                    if self.player_dict[p_id]["name"] == self.your_name:
+                        print("Your lucky dices:", self.player_dict[p_id]["lucky_dices"])
                         
-                        if notFirstPlayer:
+                        if not_first_player:
                             pause()
                             
                             if input("Type in 'y' to call previous player a liar or press enter to continue: ") == 'y':
                                 pause()
-                                print(self.playerDict[p_id]["name"],"calls",self.playerDict[previous_player]["name"],"a liar.")
+                                print(self.player_dict[p_id]["name"],"calls",self.player_dict[previous_player]["name"],"a liar.")
                                 
-                                if self.checkPlayerCount(self.playerDict,previous_player,p_id) is True:
-                                    self.playerDict = self.reorderDictionary(p_id)
-                                    if playGame == False:
+                                if self.check_players_bets(self.player_dict,previous_player,p_id) is True:
+                                    self.player_dict = self.reorder_dictionary(p_id)
+                                    if play_game == False:
                                         break
                                 else: 
-                                    self.playerDict = self.reorderDictionary(previous_player) 
+                                    self.player_dict = self.reorder_dictionary(previous_player) 
                                       
-                                roundOver = True  
-                                notFirstPlayer = False 
+                                round_over = True  
+                                not_first_player = False 
                                          
-                                self.luckyDices(self.playerDict)
+                                self.lucky_dices(self.player_dict)
                                 
                                 pause()
                                 input("Press enter to continue to next round.")
@@ -216,14 +216,14 @@ class Game(InitPlayers, GameMethods):
                                 
                                 break
                             
-                            notFirstPlayer = True
+                            not_first_player = True
                         pause()
                         
                         while True:
                             try:
-                                self.playerDict[p_id]["expCount"] = int(input("Expected count of number: "))
-                                while self.playerDict[p_id]["expCount"] <= mainCountMinimum:
-                                    self.playerDict[p_id]["expCount"] = int(input("Place a count grater than the previous: "))
+                                self.player_dict[p_id]["expCount"] = int(input("Expected count of number: "))
+                                while self.player_dict[p_id]["expCount"] <= main_count_minimum:
+                                    self.player_dict[p_id]["expCount"] = int(input("Place a count grater than the previous: "))
                                     pause()
                                 break
                             except ValueError:
@@ -233,53 +233,53 @@ class Game(InitPlayers, GameMethods):
                         
                         while True:
                             try:
-                                self.playerDict[p_id]["expNum"] = int(input("Number: "))
-                                while self.playerDict[p_id]["expNum"] > 6 or self.playerDict[p_id]["expNum"] < 1:
-                                    self.playerDict[p_id]["expNum"] = int(input("Place a number between 1 and 6: "))
+                                self.player_dict[p_id]["expNum"] = int(input("Number: "))
+                                while self.player_dict[p_id]["expNum"] > 6 or self.player_dict[p_id]["expNum"] < 1:
+                                    self.player_dict[p_id]["expNum"] = int(input("Place a number between 1 and 6: "))
                                     pause()
                                 break
                             except ValueError:
                                 print("Oops!  Something went wrong with the typed in value.  Try again...")
                                 pause()
                                 
-                        mainCountMinimum = int(self.playerDict[p_id]["expCount"])
+                        main_count_minimum = int(self.player_dict[p_id]["expCount"])
                         pause()
                         
                     else:
-                        self.playerDict[p_id]["expNum"] = mode(self.playerDict[p_id]["luckyDices"])
+                        self.player_dict[p_id]["expNum"] = mode(self.player_dict[p_id]["lucky_dices"])
                         
-                        if notFirstPlayer: 
-                            self.playerDict[p_id]["callALiar"] = random.choice(['y','n'], p=(0.4,0.6), size=(1))
+                        if not_first_player: 
+                            self.player_dict[p_id]["callALiar"] = random.choice(['y','n'], p=(0.4,0.6), size=(1))
                             
-                        for num in self.playerDict[p_id]["luckyDices"]:
-                            if num == self.playerDict[p_id]["expNum"] or num == 1:
-                                countOfPCNum += 1
+                        for num in self.player_dict[p_id]["lucky_dices"]:
+                            if num == self.player_dict[p_id]["expNum"] or num == 1:
+                                count_of_pc_num += 1
                                 
-                        if countOfPCNum >= mainCountMinimum:
-                            self.playerDict[p_id]["expCount"] = int(random.choice([countOfPCNum+1, countOfPCNum+2], size = (1)))
+                        if count_of_pc_num >= main_count_minimum:
+                            self.player_dict[p_id]["expCount"] = int(random.choice([count_of_pc_num+1, count_of_pc_num+2], size = (1)))
                         else:
-                            self.playerDict[p_id]["expCount"] = int(random.choice([mainCountMinimum+1, mainCountMinimum+2], size = (1)))
-                            if self.playerDict[p_id]["expCount"] >= allDices-1:
-                                self.playerDict[p_id]["callALiar"] = 'y'
+                            self.player_dict[p_id]["expCount"] = int(random.choice([main_count_minimum+1, main_count_minimum+2], size = (1)))
+                            if self.player_dict[p_id]["expCount"] >= all_dices-1:
+                                self.player_dict[p_id]["callALiar"] = 'y'
                                 
-                        mainCountMinimum = int(self.playerDict[p_id]["expCount"])
+                        main_count_minimum = int(self.player_dict[p_id]["expCount"])
                         
-                        if self.playerDict[p_id]["callALiar"] == 'y':
-                            print(self.playerDict[p_id]["name"],"calls",self.playerDict[previous_player]["name"],"a liar.")
+                        if self.player_dict[p_id]["callALiar"] == 'y':
+                            print(self.player_dict[p_id]["name"],"calls",self.player_dict[previous_player]["name"],"a liar.")
                             
-                            if self.checkPlayerCount(self.playerDict,previous_player,p_id) is True:
-                                self.playerDict = self.reorderDictionary(p_id)
-                                if playGame == False:
+                            if self.check_players_bets(self.player_dict,previous_player,p_id) is True:
+                                self.player_dict = self.reorder_dictionary(p_id)
+                                if play_game == False:
                                     break
                             else: 
-                                self.playerDict = self.reorderDictionary(previous_player)
-                                if playGame == False:
+                                self.player_dict = self.reorder_dictionary(previous_player)
+                                if play_game == False:
                                     break
                                 
-                            self.luckyDices(self.playerDict)
+                            self.lucky_dices(self.player_dict)
                             
-                            notFirstPlayer = False
-                            roundOver = True
+                            not_first_player = False
+                            round_over = True
                             
                             input("Press enter to continue to next round.")
                             clear_console()
@@ -291,11 +291,11 @@ class Game(InitPlayers, GameMethods):
                             
                             break
                         
-                        notFirstPlayer = True
+                        not_first_player = True
                         
-                        print(self.playerDict[p_id]["name"],"expects there are",self.playerDict[p_id]["expCount"],"x",self.playerDict[p_id]["expNum"])
+                        print(self.player_dict[p_id]["name"],"expects there are",self.player_dict[p_id]["expCount"],"x",self.player_dict[p_id]["expNum"])
                         pause()
                         
 clear_console()
-newGame = Game()
-newGame.plBets()
+new_game = Game()
+new_game.pl_bets()
